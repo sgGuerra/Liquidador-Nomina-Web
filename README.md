@@ -1,124 +1,100 @@
-# Liquidador de nómina web 
+# Liquidador de Nómina Web
 
-Sistema web para la liquidación de nómina desarrollado con Django y PostgreSQL.
+Sistema web para la liquidación de nómina desarrollado con Django, utilizando Docker para contenerización y scripts SQL para la base de datos.
 
-## Configuración del Entorno
+## Tecnologías Utilizadas
 
-### Requisitos Previos
-- Python 3.12+
-- Docker y Docker Compose (para desarrollo local)
-- PostgreSQL (proporcionado por NeonTech en producción o Docker en desarrollo)
+- **Backend**: Django 5.2.6, Django REST Framework 3.16.1, Python 3.12+
+- **Base de Datos**: PostgreSQL 16
+- **Contenerización**: Docker, Docker Compose
+- **Lenguajes**: Python, SQL
 
-### Instalación de Dependencias
+## Estructura del Proyecto
+
+- **backend/**: Aplicación Django con las siguientes apps:
+  - `cargos/`: Gestión de cargos.
+  - `empleados/`: Gestión de empleados.
+  - `nomina/`: Lógica de cálculo de nómina.
+  - `prestamos/`: Gestión de préstamos.
+  - `controladores_python/`: Controladores adicionales en Python.
+  - `model/`: Clases de modelo personalizadas.
+- **db/**: Scripts SQL para crear tablas y datos iniciales.
+- **frontend/**: Dockerfile para el frontend (aún en desarrollo).
+- **docker-compose.yml**: Configuración para ejecutar el proyecto con Docker.
+
+## Requisitos Previos
+
+- Docker y Docker Compose
+- Git
+
+## Descarga del Proyecto
+
+Clona el repositorio desde GitHub:
+
 ```bash
-pip install -r backend/requirements.txt
+git clone https://github.com/sgGuerra/Liquidador-Nomina-Web.git
+cd Liquidador-Nomina-Web
 ```
+
+## Instalación y Configuración
+
+1. Copia el archivo de ejemplo de entorno:
+   ```bash
+   cp backend/env_example backend/.env
+   ```
+   Edita `backend/.env` con tus configuraciones (ej. credenciales de DB si no usas Docker).
+
+2. Construye y ejecuta con Docker Compose:
+   ```bash
+   docker-compose up --build
+   ```
+
+Esto iniciará el backend en http://localhost:8000 y la base de datos PostgreSQL local.
 
 ## Configuración de la Base de Datos
 
-El proyecto está configurado para trabajar con dos entornos de base de datos:
+El proyecto incluye scripts SQL en la carpeta `db/` para inicializar la base de datos:
 
-### 1. Entorno de Producción (NeonTech)
-Para usar la base de datos de producción en NeonTech, necesitas configurar las siguientes variables de entorno en tu archivo `.env`:
+- `tabla_*.sql`: Crean las tablas principales (cargos, empleados, nómina, préstamos, etc.).
+- `insertar_*.sql`: Insertan datos iniciales.
+- `borrar_*.sql`: Scripts para limpiar datos.
+- `actualizar_*.sql`: Actualizaciones de tablas.
 
-```env
-PGHOST=tu-host-neontech
-PGDATABASE=tu-base-datos
-PGUSER=tu-usuario
-PGPASSWORD=tu-contraseña
-PGSSLMODE=verify-full
-PGCHANNELBINDING=require
-```
+Después de iniciar Docker Compose, conecta a la DB y ejecuta estos scripts si es necesario para poblar datos iniciales.
 
-### 2. Entorno de Desarrollo Local (Docker)
-Para desarrollo local, el proyecto incluye una configuración de Docker Compose que proporciona una base de datos PostgreSQL local.
+## Migraciones de Django
 
-1. Inicia la base de datos local:
-```bash
-docker-compose up -d
-```
-
-2. Usa el archivo `.env.local` con la siguiente configuración:
-```env
-PGHOST=localhost
-PGDATABASE=liquidador_nomina
-PGUSER=postgres
-PGPASSWORD=postgres
-PGSSLMODE=disable
-PGCHANNELBINDING=disable
-```
-
-### Cambiar entre Entornos
-
-Para cambiar entre entornos de desarrollo y producción:
-
-1. Para desarrollo local:
-```bash
-cp backend/.env.local backend/.env
-```
-
-2. Para producción:
-```bash
-# Restaura tu archivo .env de producción con las credenciales de NeonTech
-cp backend/.env.production backend/.env
-```
-
-## Migraciones de Base de Datos
-
-Después de configurar tu entorno, ejecuta las migraciones:
+Una vez que el contenedor esté corriendo, ejecuta las migraciones:
 
 ```bash
-cd backend
-python manage.py migrate
+docker-compose exec backend python manage.py migrate
 ```
 
-## Respaldo y Restauración de Datos
+## Ejecución del Proyecto
 
-Para respaldar la base de datos de producción y restaurarla localmente:
+- Accede al backend en http://localhost:8000.
+- Para desarrollo, puedes modificar el código y recargar con `docker-compose restart backend`.
 
-1. Hacer backup de la base de datos de producción:
-```bash
-pg_dump -h tu-host-neontech -U tu-usuario -d tu-base-datos > backup.sql
-```
+## Desarrollo Sin Docker
 
-2. Restaurar en local:
-```bash
-psql -h localhost -U postgres -d liquidador_nomina < backup.sql
-```
+Si prefieres ejecutar sin Docker:
 
-## Ejemplo de Uso
+1. Instala dependencias:
+   ```bash
+   pip install -r backend/requirements.txt
+   ```
 
-### 1. Configuración Inicial
-```bash
-# Clonar el repositorio
-git clone [URL_DEL_REPOSITORIO]
-cd Liquidador-Nomina-Web
+2. Configura la base de datos (PostgreSQL local o externa) en `backend/.env`.
 
-# Instalar dependencias
-pip install -r backend/requirements.txt
-
-# Configurar el entorno (desarrollo local o producción)
-cp backend/.env.local backend/.env  # Para desarrollo local
-# O usa tus credenciales de producción
-
-# Iniciar la base de datos local (solo para desarrollo)
-docker-compose up -d
-
-# Aplicar migraciones
-cd backend
-python manage.py migrate
-```
-
-### 2. Ejecución del Proyecto
-```bash
-# Desde el directorio backend
-python manage.py runserver
-```
-
-El proyecto estará disponible en http://localhost:8000/
+3. Ejecuta migraciones y servidor:
+   ```bash
+   cd backend
+   python manage.py migrate
+   python manage.py runserver
+   ```
 
 ## Notas Importantes
 
-- Nunca subas los archivos `.env` o `.env.local` al control de versiones
-- Para desarrollo local, asegúrate de que Docker esté corriendo antes de iniciar el proyecto
-- En producción, asegúrate de tener las credenciales correctas de NeonTech
+- Nunca subas los archivos `.env` al control de versiones.
+- Los scripts en `db/` son útiles para inicialización manual de la DB.
+- El frontend está en desarrollo; actualmente solo tiene un Dockerfile.
