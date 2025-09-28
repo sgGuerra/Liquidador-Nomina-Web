@@ -17,6 +17,14 @@ class EmpleadoSerializer(serializers.ModelSerializer):
             'salario_base', 'cargo', 'cargo_id', 'prestamos', 'horas_extras'
         ]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance:
+            self.fields['cedula'].required = False
+            self.fields['cedula'].read_only = True
+        else:
+            self.fields['cedula'].required = True
+
     def create(self, validated_data):
         cargo_id = validated_data.pop('cargo_id')
         from apps.cargos.models import Cargo
