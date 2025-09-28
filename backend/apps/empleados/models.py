@@ -38,7 +38,7 @@ class Empleado(models.Model):
     correo = models.EmailField(blank=True, null=True)
     telefono = models.CharField(max_length=15, blank=True, null=True)
     salario_base = models.FloatField(validators=[validate_salario_base])
-    cargo = models.ForeignKey(Cargo, on_delete=models.CASCADE)
+    cargo = models.ForeignKey(Cargo, on_delete=models.CASCADE, db_column='cargo')
 
     def __str__(self):
         return f"{self.nombres} {self.apellidos} ({self.cedula})"

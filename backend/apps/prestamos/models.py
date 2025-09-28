@@ -2,13 +2,14 @@ from django.db import models
 from apps.empleados.models import Empleado
 
 class Prestamo(models.Model):
+    id = models.AutoField(primary_key=True, db_column='id_prestamo')
     ESTADOS = [
         ('ACTIVO', 'Activo'),
         ('COMPLETADO', 'Completado'),
         ('VENCIDO', 'Vencido'),
     ]
 
-    empleado = models.ForeignKey(Empleado, on_delete=models.CASCADE)
+    empleado = models.ForeignKey(Empleado, on_delete=models.CASCADE, db_column='id_empleado')
     monto = models.FloatField()
     numero_de_cuotas = models.IntegerField()
     tasa_interes = models.FloatField()

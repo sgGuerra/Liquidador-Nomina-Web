@@ -14,6 +14,6 @@ class HoraExtraAdmin(admin.ModelAdmin):
 
 @admin.register(HistorialNomina)
 class HistorialNominaAdmin(admin.ModelAdmin):
-    list_display = ('id', 'empleado', 'fecha_calculo', 'salario_bruto', 'neto')
-    search_fields = ('empleado__cedula', 'empleado__nombres')
+    list_display = ('id', 'cedula', 'fecha_calculo', 'salario_bruto', 'neto')
+    search_fields = ('cedula',)
     list_filter = ('fecha_calculo',)
