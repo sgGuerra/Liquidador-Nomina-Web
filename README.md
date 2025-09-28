@@ -5,10 +5,11 @@ API REST para la gestión de empleados, cálculo de nómina, préstamos y admini
 ## Tecnologías Utilizadas
 
 - **Backend**: Django 5.2.6, Django REST Framework 3.16.1, DRF-YASG (Swagger), Python 3.12+
+- **Frontend**: Next.js 14+, React, Tailwind CSS, JavaScript/TypeScript
 - **Base de Datos**: PostgreSQL (Neon Tech en la nube)
 - **Contenerización**: Docker, Docker Compose
 - **Autenticación**: Sesiones de Django (admin-only para operaciones de escritura)
-- **Lenguajes**: Python, SQL
+- **Lenguajes**: Python, SQL, JavaScript
 
 ## Estructura del Proyecto
 
@@ -100,6 +101,74 @@ docker-compose exec backend python manage.py migrate
    cd backend
    python manage.py runserver
    ```
+
+## Uso de la API
+
+La API es RESTful y acepta/envía JSON. Para testing, autenticación deshabilitada temporalmente. Usa herramientas como curl, Postman o el frontend en /frontend.
+
+### Cargos
+- **Listar**: GET /api/cargos/
+- **Crear**: POST /api/cargos/  
+  ```json
+  {"nombre": "Nuevo Cargo", "bonificacion": 50000}
+  ```
+- **Detalle**: GET /api/cargos/{id}/
+- **Actualizar**: PUT /api/cargos/{id}/  
+  ```json
+  {"nombre": "Cargo Actualizado", "bonificacion": 60000}
+  ```
+- **Eliminar**: DELETE /api/cargos/{id}/
+
+### Empleados
+- **Listar**: GET /api/empleados/
+- **Crear**: POST /api/empleados/  
+  ```json
+  {"cedula": "1234567890", "nombres": "Juan", "apellidos": "Pérez", "correo": "juan@example.com", "telefono": "3001234567", "salario_base": 1500000, "cargo_id": 1}
+  ```
+- **Detalle**: GET /api/empleados/{cedula}/
+- **Actualizar**: PUT /api/empleados/{cedula}/  
+  ```json
+  {"nombres": "Juan Carlos", "salario_base": 1600000, "cargo_id": 2}
+  ```
+- **Eliminar**: DELETE /api/empleados/{cedula}/
+- **Calcular Nómina**: POST /api/empleados/{cedula}/calculate_nomina/
+
+### Préstamos
+- **Listar**: GET /api/prestamos/
+- **Crear**: POST /api/prestamos/  
+  ```json
+  {"empleado": 1, "monto": 1000000, "cuotas": 12, "tasa_interes": 0.02, "fecha_inicio": "2023-01-01"}
+  ```
+- **Detalle**: GET /api/prestamos/{id}/
+- **Actualizar**: PUT /api/prestamos/{id}/  
+  ```json
+  {"estado": "COMPLETADO"}
+  ```
+- **Eliminar**: DELETE /api/prestamos/{id}/
+- **Amortización (Pago)**: POST /api/prestamos/{id}/amortizacion/  
+  ```json
+  {"monto_pago": 85000}
+  ```
+
+### Tipos de Hora Extra
+- **Listar**: GET /api/tipos-hora-extra/
+- **Crear**: POST /api/tipos-hora-extra/  
+  ```json
+  {"nombre": "Nocturna", "factor": 1.75}
+  ```
+- **Detalle/Actualizar/Eliminar**: Similar a Cargos, con {id}
+
+### Horas Extra
+- **Listar**: GET /api/horas-extra/
+- **Crear**: POST /api/horas-extra/  
+  ```json
+  {"empleado": 1, "tipo": 1, "cantidad": 5, "fecha": "2023-10-01"}
+  ```
+- **Detalle/Actualizar/Eliminar**: Similar, con {id}
+
+### Historial de Nómina
+- **Listar**: GET /api/historial-nomina/
+- Solo lectura, no crear/actualizar/eliminar directamente.
 
 ## Notas Importantes
 

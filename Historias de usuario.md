@@ -10,14 +10,16 @@ Este documento describe las historias de usuario implementadas en el sistema de 
   - Cada cargo tiene nombre y bonificación (ej. "Empleado nuevo": 50,000 COP).
   - Validación de datos obligatorios.
 - **Funcionalidades**: API REST /api/cargos/, admin Django, autenticación requerida para escritura.
-- **Responsable**: Felipe
+- **Responsable**: Luis Carlos Guerra
+- **Estado**: Completada
 
 ### HU-02: Como administrador, quiero ver la lista de cargos disponibles.
 - **Criterios de Aceptación**:
   - Listar todos los cargos con bonificaciones.
   - Acceso de solo lectura sin autenticación.
 - **Funcionalidades**: GET /api/cargos/, admin interface.
-- **Responsable**: Felipe
+- **Responsable**: Luis Carlos Guerra
+- **Estado**: Completada
 
 ## 2. Gestión de Empleados
 
@@ -27,7 +29,8 @@ Este documento describe las historias de usuario implementadas en el sistema de 
   - Validaciones: Cédula numérica, nombres alfabéticos, salario >=1,423,500 COP.
   - Error 400 en datos inválidos.
 - **Funcionalidades**: POST /api/empleados/, admin, autenticación requerida.
-- **Responsable**: Sebastian
+- **Responsable**: Felipe
+- **Estado**: Completada
 
 ### HU-04: Como administrador, quiero consultar y modificar datos de empleados.
 - **Criterios de Aceptación**:
@@ -36,6 +39,7 @@ Este documento describe las historias de usuario implementadas en el sistema de 
   - Eliminar empleado.
 - **Funcionalidades**: GET/PUT/DELETE /api/empleados/{cedula}, admin.
 - **Responsable**: Luis Carlos Guerra
+- **Estado**: Completada
 
 ### HU-05: Como administrador, quiero calcular la nómina de un empleado.
 - **Criterios de Aceptación**:
@@ -45,7 +49,8 @@ Este documento describe las historias de usuario implementadas en el sistema de 
   - Agregar horas extra al empleado, guardar historial de nómina.
   - Retornar detalles del cálculo.
 - **Funcionalidades**: POST /api/empleados/{cedula}/calculate_nomina/, admin, autenticación requerida.
-- **Responsable**: Luis Carlos Guerra
+- **Responsable**: Felipe
+- **Estado**: Completada
 
 ## 3. Gestión de Préstamos
 
@@ -56,7 +61,8 @@ Este documento describe las historias de usuario implementadas en el sistema de 
   - Inicializar saldo restante = monto, estado = 'ACTIVO'.
   - Validar monto >0, cuotas >0.
 - **Funcionalidades**: POST /api/prestamos/, admin, autenticación requerida.
-- **Responsable**: Sebastian
+- **Responsable**: Felipe
+- **Estado**: Completada
 
 ### HU-07: Como administrador, quiero gestionar pagos de préstamos.
 - **Criterios de Aceptación**:
@@ -65,7 +71,8 @@ Este documento describe las historias de usuario implementadas en el sistema de 
   - Guardar historial de pagos.
   - Error si pago excede saldo.
 - **Funcionalidades**: POST /api/prestamos/{id}/amortizacion/, admin.
-- **Responsable**: Cano
+- **Responsable**: Sebastian
+- **Estado**: Completada
 
 ### HU-08: Como administrador, quiero consultar préstamos de empleados.
 - **Criterios de Aceptación**:
@@ -73,6 +80,7 @@ Este documento describe las historias de usuario implementadas en el sistema de 
   - Ver detalles de un préstamo.
 - **Funcionalidades**: GET /api/prestamos/, admin.
 - **Responsable**: Cano
+- **Estado**: Completada
 
 ## 4. Gestión de Nómina y Horas Extra
 
@@ -80,13 +88,16 @@ Este documento describe las historias de usuario implementadas en el sistema de 
 - **Criterios de Aceptación**:
   - CRUD para tipos (Diurnas, Nocturnas, Festivas).
 - **Funcionalidades**: API /api/tipos_horas_extra/, admin.
+- **Responsable**: Sebastian
+- **Estado**: Completada
 
 ### HU-10: Como administrador, quiero registrar horas extra para empleados.
 - **Criterios de Aceptación**:
   - Crear horas extra con tipo, cantidad (<=50 total), fecha.
   - Asociar a empleado.
 - **Funcionalidades**: API /api/horas_extras/, admin, autenticación requerida.
-- **Responsable**: Luis Carlos Guerra
+- **Responsable**: Cano
+- **Estado**: Completada
 
 ### HU-11: Como administrador, quiero consultar historial de nóminas.
 - **Criterios de Aceptación**:
@@ -94,6 +105,7 @@ Este documento describe las historias de usuario implementadas en el sistema de 
   - Ver detalles: bruto, deducciones, impuestos, auxilio, neto, fecha.
 - **Funcionalidades**: GET /api/historial_nomina/, admin.
 - **Responsable**: Cano
+- **Estado**: Completada
 
 ## 5. Autenticación y Seguridad
 
@@ -103,7 +115,8 @@ Este documento describe las historias de usuario implementadas en el sistema de 
   - Sesiones para autenticación en API.
   - Operaciones de escritura requieren autenticación (403 si no).
 - **Funcionalidades**: Django admin, session auth.
-- **Responsable**: Felipe
+- **Responsable**: Cano
+- **Estado**: Completada
 
 ## 6. Validaciones y Reglas de Negocio
 
@@ -116,7 +129,8 @@ Este documento describe las historias de usuario implementadas en el sistema de 
   - Préstamos: Deducción <=50% después de deducciones legales.
   - Errores claros en API (400).
 - **Funcionalidades**: Model validators, service exceptions.
-- **Responsable**: Sebastian
+- **Responsable**: Felipe
+- **Estado**: Completada
 
 ### HU-14: Como sistema, quiero calcular nómina automáticamente.
 - **Criterios de Aceptación**:
@@ -124,7 +138,49 @@ Este documento describe las historias de usuario implementadas en el sistema de 
   - Factores horas extra: Diurnas 1.25x, Nocturnas 1.75x, Festivas 2.5x.
   - Amortización Francesa para préstamos.
 - **Funcionalidades**: NominaService, LoanService.
-- **Responsable**: Sebastian
+- **Responsable**: Sebastia
+- **Estado**: Completada
+
+### HU-15: Como administrador, quiero un liquidador web de nómina para gestionar pagos y reportes.
+- **Criterios de Aceptación**:
+  - Pagar nómina a todos los empleados de una vez.
+  - Ver historial de nómina de cada empleado individualmente.
+  - Generar reportes de nómina para cada empleado (PDF o similar).
+  - Modificar datos básicos de empleados (nombres, salario, cargo).
+- **Funcionalidades**: Página web /liquidar-nomina con botones para pagar todos, ver historiales, generar reportes, editar empleados.
+- **Responsable**:
+- **Estado**: Pendiente
+
+### HU-16: Como administrador, quiero autenticarme en el frontend para tener mayor seguridad sobre el acceso a los datos.
+- **Criterios de Aceptación**:
+  - Página de login en el frontend con campos usuario y contraseña.
+  - Validación de credenciales contra el backend.
+  - Redirección a dashboard después de login exitoso.
+  - Logout funcional.
+  - Protección de rutas sin autenticación.
+- **Funcionalidades**: Página /login, manejo de sesiones en frontend, llamadas a API de auth.
+- **Responsable**:
+- **Estado**: Pendiente
+
+### HU-17: Como administrador, quiero una interfaz mejorada para el cálculo de nómina con diseño profesional.
+- **Criterios de Aceptación**:
+  - Dashboard principal con resumen de empleados, nóminas recientes.
+  - Páginas dedicadas para gestión de empleados, cargos, préstamos, horas extra.
+  - Botones claros para calcular nómina individual o masiva.
+  - Diseño responsivo, colores corporativos, iconos intuitivos.
+  - Navegación fácil entre secciones.
+- **Funcionalidades**: Mejora de UI/UX en Next.js, componentes reutilizables, estilos con Tailwind.
+- **Responsable**:
+- **Estado**: Pendiente
+
+### HU-18: Como administrador, quiero generar reportes de nómina en PDF desde el frontend.
+- **Criterios de Aceptación**:
+  - Botón para generar reporte por empleado o general.
+  - Descarga automática de PDF con detalles de nómina.
+  - Inclusión de logo, fechas, totales.
+- **Funcionalidades**: Integración con librería PDF en frontend, endpoint backend para datos.
+- **Responsable**:
+- **Estado**: Pendiente
 
 ## Notas Generales
 - Todas las historias requieren acceso de administrador para modificaciones.
