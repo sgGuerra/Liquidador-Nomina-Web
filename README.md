@@ -1,31 +1,41 @@
 # Liquidador de Nómina Web
 
-Sistema web para la liquidación de nómina desarrollado con Django, utilizando Docker para contenerización y scripts SQL para la base de datos.
+API REST para la gestión de empleados, cálculo de nómina, préstamos y administración de sistema, desarrollado con Django REST Framework. Incluye autenticación de administrador, cálculo automático de deducciones, manejo de préstamos múltiples y historial de nóminas.
 
 ## Tecnologías Utilizadas
 
-- **Backend**: Django 5.2.6, Django REST Framework 3.16.1, Python 3.12+
-- **Base de Datos**: PostgreSQL 16
+- **Backend**: Django 5.2.6, Django REST Framework 3.16.1, DRF-YASG (Swagger), Python 3.12+
+- **Base de Datos**: PostgreSQL (Neon Tech en la nube)
 - **Contenerización**: Docker, Docker Compose
+- **Autenticación**: Sesiones de Django (admin-only para operaciones de escritura)
 - **Lenguajes**: Python, SQL
 
 ## Estructura del Proyecto
 
 - **backend/**: Aplicación Django con las siguientes apps:
-  - `cargos/`: Gestión de cargos.
-  - `empleados/`: Gestión de empleados.
-  - `nomina/`: Lógica de cálculo de nómina.
-  - `prestamos/`: Gestión de préstamos.
-  - `controladores_python/`: Controladores adicionales en Python.
-  - `model/`: Clases de modelo personalizadas.
-- **db/**: Scripts SQL para crear tablas y datos iniciales.
+  - `cargos/`: Modelo y API para cargos (con bonificación).
+  - `empleados/`: Modelo y API para empleados (CRUD, cálculo de nómina).
+  - `nomina/`: Modelos para tipos de horas extra, horas extra, historial de nómina.
+  - `prestamos/`: Modelo y API para préstamos (con amortización).
+  - `services/`: Lógica de negocio portada de clases antiguas (NominaService, LoanService).
+  - `exceptions/`: Excepciones personalizadas para validaciones.
+- **db/**: Scripts SQL actualizados para esquemas de tablas (incluyendo columnas adicionales como correo, teléfono, cuota_mensual, etc.).
 - **frontend/**: Dockerfile para el frontend (aún en desarrollo).
 - **docker-compose.yml**: Configuración para ejecutar el proyecto con Docker.
+
+## Funcionalidades Principales
+
+- **Gestión de Empleados**: CRUD completo con validaciones (cédula, salario mínimo, etc.).
+- **Cálculo de Nómina**: Automático con bonificaciones, horas extra, deducciones (salud 4%, pensión 4%), impuestos UVT, auxilio transporte, préstamos (múltiples, deducción del más antiguo, límite 50% post-deducción legal).
+- **Préstamos**: Creación con amortización Francesa, pagos con actualización de saldo, historial.
+- **Admin**: Interfaz Django para gestión de datos, login requerido para operaciones sensibles.
+- **API**: Endpoints REST con documentación Swagger (/swagger/), autenticación de sesión.
 
 ## Requisitos Previos
 
 - Docker y Docker Compose
 - Git
+- Credenciales de base de datos Neon Tech (configuradas en .env)
 
 ## Descarga del Proyecto
 
@@ -42,29 +52,28 @@ cd Liquidador-Nomina-Web
    ```bash
    cp backend/env_example backend/.env
    ```
-   Edita `backend/.env` con tus configuraciones (ej. credenciales de DB si no usas Docker).
+   Edita `backend/.env` con DATABASE_URL de Neon Tech.
 
 2. Construye y ejecuta con Docker Compose:
    ```bash
    docker-compose up --build
    ```
 
-Esto iniciará el backend en http://localhost:8000 y la base de datos PostgreSQL local.
+Esto iniciará el backend en http://localhost:8000.
 
 ## Configuración de la Base de Datos
 
-El proyecto incluye scripts SQL en la carpeta `db/` para inicializar la base de datos:
+La DB en Neon Tech ya tiene las tablas creadas. Scripts en `db/` para referencia:
 
-- `tabla_*.sql`: Crean las tablas principales (cargos, empleados, nómina, préstamos, etc.).
-- `insertar_*.sql`: Insertan datos iniciales.
-- `borrar_*.sql`: Scripts para limpiar datos.
-- `actualizar_*.sql`: Actualizaciones de tablas.
+- `tabla_*.sql`: Esquemas actualizados.
+- `insertar_*.sql`: Datos iniciales (cargos, tipos horas extra).
+- `actualizar_*.sql`: Agregan columnas adicionales.
 
-Después de iniciar Docker Compose, conecta a la DB y ejecuta estos scripts si es necesario para poblar datos iniciales.
+Si necesitas reinicializar, ejecuta los scripts en la DB.
 
 ## Migraciones de Django
 
-Una vez que el contenedor esté corriendo, ejecuta las migraciones:
+Ejecuta migraciones (aunque las tablas existen, para compatibilidad):
 
 ```bash
 docker-compose exec backend python manage.py migrate
@@ -73,28 +82,29 @@ docker-compose exec backend python manage.py migrate
 ## Ejecución del Proyecto
 
 - Accede al backend en http://localhost:8000.
-- Para desarrollo, puedes modificar el código y recargar con `docker-compose restart backend`.
+- Admin: /admin/ (login con superusuario).
+- API Docs: /swagger/.
+- Para desarrollo, modifica código y recarga con `docker-compose restart backend`.
 
 ## Desarrollo Sin Docker
-
-Si prefieres ejecutar sin Docker:
 
 1. Instala dependencias:
    ```bash
    pip install -r backend/requirements.txt
    ```
 
-2. Configura la base de datos (PostgreSQL local o externa) en `backend/.env`.
+2. Configura DATABASE_URL en `backend/.env`.
 
-3. Ejecuta migraciones y servidor:
+3. Ejecuta servidor:
    ```bash
    cd backend
-   python manage.py migrate
    python manage.py runserver
    ```
 
 ## Notas Importantes
 
-- Nunca subas los archivos `.env` al control de versiones.
-- Los scripts en `db/` son útiles para inicialización manual de la DB.
-- El frontend está en desarrollo; actualmente solo tiene un Dockerfile.
+- Autenticación: Solo admin puede crear/modificar datos; login en /admin/.
+- Validaciones: Salario >=1,423,500 COP, cédula 8-10 dígitos, horas extra <=50, préstamos <=50% deducción.
+- Cálculo: Incluye constantes legales (UVT, auxilio), amortización Francesa.
+- Nunca subas `.env` al repo.
+- Frontend en desarrollo.
