@@ -123,6 +123,6 @@ Las reglas de negocio RN01-RN10 se integran como criterios de aceptación en las
 ## Notas Generales
 - Backend completado con API REST, cálculos automáticos, validaciones.
 - Frontend pendiente: interfaz web, reportes, autenticación frontend.
-- Base de datos PostgreSQL en Neon Tech.
+- Base de datos PostgreSQL en Neon Tech. (para desarrollo local)
 - Documentación API en /swagger/ y /redoc/.
 - Asignación de responsables basada en contribuciones actuales.
