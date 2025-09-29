@@ -62,6 +62,11 @@ cd Liquidador-Nomina-Web
 
 Esto iniciará el backend en http://localhost:8000.
 
+Las imágenes Docker están disponibles en Docker Hub:
+- [lcguerra/liquidador-frontend](https://hub.docker.com/r/lcguerra/liquidador-frontend)
+- [lcguerra/liquidador-backend](https://hub.docker.com/r/lcguerra/liquidador-backend)
+- [lcguerra/liquidador-db](https://hub.docker.com/r/lcguerra/liquidador-db)
+
 ## Configuración de la Base de Datos
 
 La DB en Neon Tech ya tiene las tablas creadas. Scripts en `db/` para referencia:
@@ -84,7 +89,7 @@ docker-compose exec backend python manage.py migrate
 
 - Accede al backend en http://localhost:8000.
 - Admin: /admin/ (login con superusuario).
-- API Docs: /swagger/.
+- API Docs: /swagger/ (Swagger UI) y /redoc/ (ReDoc).
 - Para desarrollo, modifica código y recarga con `docker-compose restart backend`.
 
 ## Desarrollo Sin Docker

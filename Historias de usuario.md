@@ -1,190 +1,128 @@
 # Historias de Usuario - Liquidador de Nómina Web
 
-Este documento describe las historias de usuario implementadas en el sistema de liquidación de nómina, basado en las funcionalidades desarrolladas durante la refactorización a una API REST con Django.
+Este documento describe las historias de usuario basadas en los requisitos funcionales, no funcionales y reglas de negocio del proyecto. Se han alineado con las funcionalidades actuales del sistema web desarrollado con Django REST Framework y Next.js.
 
-## 1. Gestión de Cargos
+## Requisitos Funcionales
 
-### HU-01: Como administrador, quiero gestionar cargos para asignar bonificaciones a empleados.
+### HU-01: Como administrador, quiero registrar datos básicos del empleado para gestionar su información.
 - **Criterios de Aceptación**:
-  - Crear, leer, actualizar y eliminar cargos.
-  - Cada cargo tiene nombre y bonificación (ej. "Empleado nuevo": 50,000 COP).
-  - Validación de datos obligatorios.
-- **Funcionalidades**: API REST /api/cargos/, admin Django, autenticación requerida para escritura.
+  - Ingresar nombre, cargo, salario base, tipo de contrato y horario laboral.
+  - Validar datos obligatorios y formatos correctos.
+  - Integrar con API REST para almacenamiento en base de datos.
+- **Responsable**: Juan Felipe Ruiz
+- **Estado**: Completada (Backend API implementada)
+
+### HU-02: Como administrador, quiero calcular automáticamente el salario neto del empleado.
+- **Criterios de Aceptación**:
+  - Calcular basado en salario base, días trabajados, auxilio de transporte (si aplica), horas extras, deducciones legales (salud, pensión, FSP), préstamos vigentes.
+  - Aplicar reglas de negocio RN01-RN10.
+  - Retornar detalles del cálculo en JSON.
+- **Responsable**: Sebastián Buitrago
+- **Estado**: Completada (Backend cálculo implementado)
+
+### HU-03: Como administrador, quiero gestionar horas extras del empleado.
+- **Criterios de Aceptación**:
+  - Registrar horas extras clasificadas en diurnas, nocturnas, dominicales o festivas.
+  - Calcular recargos según factores (RN03).
+  - Validar límite total de horas extras.
+- **Responsable**: Santiago Cano
+- **Estado**: Completada (Backend API para tipos y horas extras)
+
+### HU-04: Como administrador, quiero calcular y gestionar préstamos del empleado.
+- **Criterios de Aceptación**:
+  - Agregar préstamos con monto, cuotas, interés (6%).
+  - Calcular deducción mensual con amortización Francesa.
+  - Gestionar pagos y actualizar saldo.
 - **Responsable**: Luis Carlos Guerra
-- **Estado**: Completada
+- **Estado**: Completada (Backend API de préstamos)
 
-### HU-02: Como administrador, quiero ver la lista de cargos disponibles.
+### HU-05: Como administrador, quiero aplicar deducciones legales automáticamente.
 - **Criterios de Aceptación**:
-  - Listar todos los cargos con bonificaciones.
-  - Acceso de solo lectura sin autenticación.
-- **Funcionalidades**: GET /api/cargos/, admin interface.
+  - Deducir salud (4%), pensión (4%), FSP (según RN06) del salario.
+  - Aplicar según normatividad colombiana.
+- **Responsable**: Sebastián Buitrago
+- **Estado**: Completada (Integrado en cálculo de nómina)
+
+### HU-06: Como administrador, quiero generar reportes de liquidación.
+- **Criterios de Aceptación**:
+  - Generar reportes en PDF (individual) y Excel (consolidado).
+  - Incluir detalles de cálculo, fechas, totales.
+- **Responsable**: Santiago Cano
+- **Estado**: Pendiente (Backend listo, frontend pendiente)
+
+### HU-07: Como administrador, quiero visualizar y exportar resultados de liquidación.
+- **Criterios de Aceptación**:
+  - Visualizar resultado en interfaz web.
+  - Exportar en formatos PDF y Excel.
+- **Responsable**: Juan Felipe Ruiz
+- **Estado**: Pendiente (Frontend en desarrollo)
+
+### HU-08: Como administrador, quiero una interfaz gráfica web amigable para el sistema.
+- **Criterios de Aceptación**:
+  - Interfaz clara para ingresar datos, realizar cálculos y ver resultados.
+  - Implementada con Next.js, Tailwind CSS, responsiva.
 - **Responsable**: Luis Carlos Guerra
-- **Estado**: Completada
+- **Estado**: Pendiente (Frontend en desarrollo)
 
-## 2. Gestión de Empleados
+## Requisitos No Funcionales
 
-### HU-03: Como administrador, quiero crear empleados con datos completos.
+### HU-09: Como desarrollador, quiero que el sistema sea portable en Windows, macOS y Linux.
 - **Criterios de Aceptación**:
-  - Crear empleado con cédula (única, 8-10 dígitos), nombres, apellidos, correo, teléfono, cargo, salario base.
-  - Validaciones: Cédula numérica, nombres alfabéticos, salario >=1,423,500 COP.
-  - Error 400 en datos inválidos.
-- **Funcionalidades**: POST /api/empleados/, admin, autenticación requerida.
-- **Responsable**: Felipe
-- **Estado**: Completada
+  - Compatible mediante Python y tecnologías web.
+  - Ejecutable en múltiples OS sin modificaciones.
+- **Responsable**: Juan Felipe Ruiz
+- **Estado**: Completada (Python y web)
 
-### HU-04: Como administrador, quiero consultar y modificar datos de empleados.
+### HU-10: Como usuario, quiero que las operaciones sean rápidas.
 - **Criterios de Aceptación**:
-  - Leer lista de empleados con datos anidados (cargo).
-  - Actualizar empleado existente.
-  - Eliminar empleado.
-- **Funcionalidades**: GET/PUT/DELETE /api/empleados/{cedula}, admin.
+  - Cálculos y reportes en menos de 2 segundos para hasta 50 empleados.
+- **Responsable**: Sebastián Buitrago
+- **Estado**: Completada (Optimizado en backend)
+
+### HU-11: Como usuario, quiero una interfaz usable sin conocimientos técnicos avanzados.
+- **Criterios de Aceptación**:
+  - Interfaz intuitiva, clara, fácil de navegar.
 - **Responsable**: Luis Carlos Guerra
-- **Estado**: Completada
+- **Estado**: Pendiente (Frontend en desarrollo)
 
-### HU-05: Como administrador, quiero calcular la nómina de un empleado.
+### HU-12: Como desarrollador, quiero código mantenible y modular.
 - **Criterios de Aceptación**:
-  - Calcular salario bruto (base + bonificación + horas extra).
-  - Aplicar deducciones (salud 4%, pensión 4%, préstamos desde el más antiguo, límite 50% post-legal).
-  - Calcular impuestos (basado en UVT), auxilio transporte si <=2*min.
-  - Agregar horas extra al empleado, guardar historial de nómina.
-  - Retornar detalles del cálculo.
-- **Funcionalidades**: POST /api/empleados/{cedula}/calculate_nomina/, admin, autenticación requerida.
-- **Responsable**: Felipe
-- **Estado**: Completada
+  - Estructura modular (src/, test/, sql/).
+  - Fácil modificación futura.
+- **Responsable**: Santiago Cano
+- **Estado**: Completada (Estructura actual)
 
-## 3. Gestión de Préstamos
-
-### HU-06: Como administrador, quiero crear préstamos para empleados.
+### HU-13: Como administrador, quiero seguridad en el acceso a datos.
 - **Criterios de Aceptación**:
-  - Crear préstamo con monto, cuotas, tasa interés, fecha inicio.
-  - Calcular cuota mensual usando amortización Francesa.
-  - Inicializar saldo restante = monto, estado = 'ACTIVO'.
-  - Validar monto >0, cuotas >0.
-- **Funcionalidades**: POST /api/prestamos/, admin, autenticación requerida.
-- **Responsable**: Felipe
-- **Estado**: Completada
+  - No almacenar contraseñas en texto plano.
+  - Acceso restringido localmente.
+  - Autenticación en admin.
+- **Responsable**: Juan Felipe Ruiz
+- **Estado**: Completada (Django auth)
 
-### HU-07: Como administrador, quiero gestionar pagos de préstamos.
+### HU-14: Como usuario, quiero funcionamiento offline.
 - **Criterios de Aceptación**:
-  - Procesar pago mensual, actualizar saldo/interés/capital.
-  - Marcar como completado si saldo =0.
-  - Guardar historial de pagos.
-  - Error si pago excede saldo.
-- **Funcionalidades**: POST /api/prestamos/{id}/amortizacion/, admin.
-- **Responsable**: Sebastian
-- **Estado**: Completada
+  - Funcionar sin conexión a internet (local).
+- **Responsable**: Sebastián Buitrago
+- **Estado**: Completada (Aplicación local con Docker)
 
-### HU-08: Como administrador, quiero consultar préstamos de empleados.
+### HU-15: Como proyecto, quiero licencia abierta MIT.
 - **Criterios de Aceptación**:
-  - Listar préstamos con saldo y estado.
-  - Ver detalles de un préstamo.
-- **Funcionalidades**: GET /api/prestamos/, admin.
-- **Responsable**: Cano
-- **Estado**: Completada
+  - Disponible bajo MIT para uso libre con atribución.
+- **Responsable**: Luis Carlos Guerra
+- **Estado**: Pendiente (Agregar licencia al repo)
 
-## 4. Gestión de Nómina y Horas Extra
+## Reglas de Negocio
 
-### HU-09: Como administrador, quiero gestionar tipos de horas extra.
-- **Criterios de Aceptación**:
-  - CRUD para tipos (Diurnas, Nocturnas, Festivas).
-- **Funcionalidades**: API /api/tipos_horas_extra/, admin.
-- **Responsable**: Sebastian
-- **Estado**: Completada
+Las reglas de negocio RN01-RN10 se integran como criterios de aceptación en las HU correspondientes, especialmente en HU-02, HU-03, HU-04, HU-05.
 
-### HU-10: Como administrador, quiero registrar horas extra para empleados.
-- **Criterios de Aceptación**:
-  - Crear horas extra con tipo, cantidad (<=50 total), fecha.
-  - Asociar a empleado.
-- **Funcionalidades**: API /api/horas_extras/, admin, autenticación requerida.
-- **Responsable**: Cano
-- **Estado**: Completada
-
-### HU-11: Como administrador, quiero consultar historial de nóminas.
-- **Criterios de Aceptación**:
-  - Listar historiales por empleado o general.
-  - Ver detalles: bruto, deducciones, impuestos, auxilio, neto, fecha.
-- **Funcionalidades**: GET /api/historial_nomina/, admin.
-- **Responsable**: Cano
-- **Estado**: Completada
-
-## 5. Autenticación y Seguridad
-
-### HU-12: Como administrador, quiero acceder al sistema de forma segura.
-- **Criterios de Aceptación**:
-  - Login/logout en /admin/.
-  - Sesiones para autenticación en API.
-  - Operaciones de escritura requieren autenticación (403 si no).
-- **Funcionalidades**: Django admin, session auth.
-- **Responsable**: Cano
-- **Estado**: Completada
-
-## 6. Validaciones y Reglas de Negocio
-
-### HU-13: Como sistema, quiero validar datos de entrada.
-- **Criterios de Aceptación**:
-  - Cédula: 8-10 dígitos numéricos.
-  - Nombres/apellidos: Solo letras y espacios.
-  - Salario: >= mínimo legal (1,423,500 COP).
-  - Horas extra: <=50 mensuales.
-  - Préstamos: Deducción <=50% después de deducciones legales.
-  - Errores claros en API (400).
-- **Funcionalidades**: Model validators, service exceptions.
-- **Responsable**: Felipe
-- **Estado**: Completada
-
-### HU-14: Como sistema, quiero calcular nómina automáticamente.
-- **Criterios de Aceptación**:
-  - Usar constantes: UVT=49,799, auxilio=200,000, salud/pensión=4%.
-  - Factores horas extra: Diurnas 1.25x, Nocturnas 1.75x, Festivas 2.5x.
-  - Amortización Francesa para préstamos.
-- **Funcionalidades**: NominaService, LoanService.
-- **Responsable**: Sebastia
-- **Estado**: Completada
-
-### HU-15: Como administrador, quiero un liquidador web de nómina para gestionar pagos y reportes.
-- **Criterios de Aceptación**:
-  - Pagar nómina a todos los empleados de una vez.
-  - Ver historial de nómina de cada empleado individualmente.
-  - Generar reportes de nómina para cada empleado (PDF o similar).
-  - Modificar datos básicos de empleados (nombres, salario, cargo).
-- **Funcionalidades**: Página web /liquidar-nomina con botones para pagar todos, ver historiales, generar reportes, editar empleados.
-- **Responsable**:
-- **Estado**: Pendiente
-
-### HU-16: Como administrador, quiero autenticarme en el frontend para tener mayor seguridad sobre el acceso a los datos.
-- **Criterios de Aceptación**:
-  - Página de login en el frontend con campos usuario y contraseña.
-  - Validación de credenciales contra el backend.
-  - Redirección a dashboard después de login exitoso.
-  - Logout funcional.
-  - Protección de rutas sin autenticación.
-- **Funcionalidades**: Página /login, manejo de sesiones en frontend, llamadas a API de auth.
-- **Responsable**:
-- **Estado**: Pendiente
-
-### HU-17: Como administrador, quiero una interfaz mejorada para el cálculo de nómina con diseño profesional.
-- **Criterios de Aceptación**:
-  - Dashboard principal con resumen de empleados, nóminas recientes.
-  - Páginas dedicadas para gestión de empleados, cargos, préstamos, horas extra.
-  - Botones claros para calcular nómina individual o masiva.
-  - Diseño responsivo, colores corporativos, iconos intuitivos.
-  - Navegación fácil entre secciones.
-- **Funcionalidades**: Mejora de UI/UX en Next.js, componentes reutilizables, estilos con Tailwind.
-- **Responsable**:
-- **Estado**: Pendiente
-
-### HU-18: Como administrador, quiero generar reportes de nómina en PDF desde el frontend.
-- **Criterios de Aceptación**:
-  - Botón para generar reporte por empleado o general.
-  - Descarga automática de PDF con detalles de nómina.
-  - Inclusión de logo, fechas, totales.
-- **Funcionalidades**: Integración con librería PDF en frontend, endpoint backend para datos.
-- **Responsable**:
-- **Estado**: Pendiente
+- **RN01-RN03**: Integradas en HU-02 y HU-03 (cálculos de día, hora, recargos).
+- **RN04-RN07**: Integradas en HU-02 y HU-05 (auxilio, deducciones, FSP, préstamos).
+- **RN08-RN10**: Integradas en HU-02, HU-06, HU-07 (redondeo, reportes, salario neto).
 
 ## Notas Generales
-- Todas las historias requieren acceso de administrador para modificaciones.
-- La API es RESTful con JSON responses.
-- Documentación en /swagger/.
-- Base de datos PostgreSQL en Neon Tech.
-- Funcionalidades probadas: CRUD, cálculos, validaciones, autenticación.
+- Backend completado con API REST, cálculos automáticos, validaciones.
+- Frontend pendiente: interfaz web, reportes, autenticación frontend.
+- Base de datos PostgreSQL en Neon Tech. (para desarrollo local)
+- Documentación API en /swagger/ y /redoc/.
+- Asignación de responsables basada en contribuciones actuales.
