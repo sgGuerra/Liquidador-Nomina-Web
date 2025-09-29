@@ -6,7 +6,7 @@ API REST para la gestión de empleados, cálculo de nómina, préstamos y admini
 
 - **Backend**: Django 5.2.6, Django REST Framework 3.16.1, DRF-YASG (Swagger), Python 3.12+
 - **Frontend**: Next.js 14+, React, Tailwind CSS, JavaScript/TypeScript
-- **Base de Datos**: PostgreSQL (Neon Tech en la nube)
+- **Base de Datos**: PostgreSQL (local via Docker)
 - **Contenerización**: Docker, Docker Compose
 - **Autenticación**: Sesiones de Django (admin-only para operaciones de escritura)
 - **Lenguajes**: Python, SQL, JavaScript
@@ -34,9 +34,10 @@ API REST para la gestión de empleados, cálculo de nómina, préstamos y admini
 
 ## Requisitos Previos
 
-- Docker y Docker Compose
+- Docker y Docker Compose (para Opción 1)
 - Git
-- Credenciales de base de datos Neon Tech (configuradas en .env)
+- Python 3.12+ y pip (para Opción 2)
+- Node.js y npm (para Opción 2)
 
 ## Descarga del Proyecto
 
@@ -49,18 +50,20 @@ cd Liquidador-Nomina-Web
 
 ## Instalación y Configuración
 
-1. Copia el archivo de ejemplo de entorno:
-   ```bash
-   cp backend/env_example backend/.env
-   ```
-   Edita `backend/.env` con DATABASE_URL de Neon Tech.
+### Opción 1: Con Docker (Recomendado - Base de datos local incluida)
 
-2. Construye y ejecuta con Docker Compose:
-   ```bash
-   docker-compose up --build
-   ```
+Ejecuta el proyecto con Docker Compose (las imágenes se descargarán automáticamente de Docker Hub):
 
-Esto iniciará el backend en http://localhost:8000.
+```bash
+docker-compose up
+```
+
+Esto iniciará:
+- Backend en http://localhost:8000
+- Frontend en http://localhost:3000
+- Base de datos PostgreSQL local (inicializada automáticamente con tablas y datos de ejemplo)
+
+No se requiere configuración adicional de base de datos.
 
 Las imágenes Docker están disponibles en Docker Hub:
 - [lcguerra/liquidador-frontend](https://hub.docker.com/r/lcguerra/liquidador-frontend)
@@ -69,13 +72,10 @@ Las imágenes Docker están disponibles en Docker Hub:
 
 ## Configuración de la Base de Datos
 
-La DB en Neon Tech ya tiene las tablas creadas. Scripts en `db/` para referencia:
+La base de datos PostgreSQL se inicializa automáticamente con las tablas y datos de ejemplo al ejecutar `docker-compose up`. Los scripts SQL están en `db/` para referencia:
 
-- `tabla_*.sql`: Esquemas actualizados.
-- `insertar_*.sql`: Datos iniciales (cargos, tipos horas extra).
-- `actualizar_*.sql`: Agregan columnas adicionales.
-
-Si necesitas reinicializar, ejecuta los scripts en la DB.
+- `tabla_*.sql`: Esquemas de tablas.
+- `insertar_*.sql`: Datos iniciales (cargos, tipos de horas extra).
 
 ## Migraciones de Django
 
@@ -88,24 +88,54 @@ docker-compose exec backend python manage.py migrate
 ## Ejecución del Proyecto
 
 - Accede al backend en http://localhost:8000.
-- Admin: /admin/ (login con superusuario).
-- API Docs: /swagger/ (Swagger UI) y /redoc/ (ReDoc).
+- Admin: http://localhost:8000/admin/ (login con superusuario).
+- Documentación API Swagger: http://localhost:8000/swagger/
+- Documentación API ReDoc: http://localhost:8000/redoc/
 - Para desarrollo, modifica código y recarga con `docker-compose restart backend`.
 
-## Desarrollo Sin Docker
+### Opción 2: Desarrollo Local (Backend y Frontend en local, Base de datos en Neon Tech)
 
-1. Instala dependencias:
-   ```bash
-   pip install -r backend/requirements.txt
-   ```
+Si deseas desarrollar localmente sin Docker, instala las dependencias y configura una base de datos en Neon Tech:
 
-2. Configura DATABASE_URL en `backend/.env`.
-
-3. Ejecuta servidor:
+1. **Instala dependencias del backend:**
    ```bash
    cd backend
+   pip install -r requirements.txt
+   ```
+
+2. **Instala dependencias del frontend:**
+   ```bash
+   cd frontend
+   npm install
+   ```
+
+3. **Configura la base de datos:**
+   - Crea una cuenta en [Neon Tech](https://neon.tech/).
+   - Crea un nuevo proyecto de PostgreSQL.
+   - Copia la URL de conexión (DATABASE_URL).
+   - Crea el archivo `backend/.env` y agrega:
+     ```
+     DATABASE_URL=postgresql://usuario:password@host/dbname
+     ```
+
+4. **Ejecuta las migraciones de Django:**
+   ```bash
+   cd backend
+   python manage.py migrate
+   ```
+
+5. **Ejecuta el backend:**
+   ```bash
    python manage.py runserver
    ```
+   Accede en http://localhost:8000.
+
+6. **Ejecuta el frontend (en otra terminal):**
+   ```bash
+   cd frontend
+   npm run dev
+   ```
+   Accede en http://localhost:3000.
 
 ## Uso de la API
 
