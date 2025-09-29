@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 from .models import Prestamo
 from .serializers import PrestamoSerializer
 from services.loan_service import LoanService
@@ -9,7 +9,7 @@ from services.loan_service import LoanService
 class PrestamoViewSet(viewsets.ModelViewSet):
     queryset = Prestamo.objects.all()
     serializer_class = PrestamoSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     @action(detail=True, methods=['get'])
     def amortizacion(self, request, pk=None):
