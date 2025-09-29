@@ -84,7 +84,7 @@ docker-compose exec backend python manage.py migrate
 
 - Accede al backend en http://localhost:8000.
 - Admin: /admin/ (login con superusuario).
-- API Docs: /swagger/.
+- API Docs: /swagger/ (Swagger UI) y /redoc/ (ReDoc).
 - Para desarrollo, modifica código y recarga con `docker-compose restart backend`.
 
 ## Desarrollo Sin Docker

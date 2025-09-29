@@ -1,4 +1,0 @@
-- [x] Update backend views to allow anonymous access (change IsAuthenticated to AllowAny)
-- [x] Run backend server
-- [x] Run frontend server
-- [ ] Test data loading on all pages (cargos, empleados, prestamos, historial-nomina, etc.)
