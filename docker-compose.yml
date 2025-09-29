@@ -2,9 +2,7 @@ version: '3.8'
 
 services:
   db:
-    build:
-      context: ./db
-      dockerfile: Dockerfile
+    image: lcguerra/liquidador-db
     container_name: liquidador_nomina_db
     environment:
       - POSTGRES_DB=liquidador_nomina
@@ -19,9 +17,7 @@ services:
       retries: 5
 
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    image: lcguerra/liquidador-backend
     container_name: liquidador_nomina_backend
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/liquidador_nomina
@@ -30,14 +26,10 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    volumes:
-      - ./backend:/app
     command: python manage.py runserver 0.0.0.0:8000
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    image: lcguerra/liquidador-frontend
     container_name: liquidador_nomina_frontend
     ports:
       - "3000:3000"
