@@ -26,7 +26,7 @@ class EmpleadoViewSet(viewsets.ModelViewSet):
 
             # Save to history
             HistorialNomina.objects.create(
-                empleado=empleado,
+                cedula=empleado.cedula,
                 salario_bruto=resultado['salario_bruto'],
                 deducciones=resultado['deducciones_legales'] + resultado['deducciones_prestamos'],
                 impuestos=resultado['impuestos'],
