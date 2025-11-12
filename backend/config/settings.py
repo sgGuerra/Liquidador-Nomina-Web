@@ -2,24 +2,24 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 from urllib.parse import urlparse, parse_qsl
+import sys  # 👈 Import necesario para detectar pytest
 
+# Cargar variables del entorno (.env)
 load_dotenv()
 
+# Parsear URL de base de datos desde el .env
 tmpPostgres = urlparse(os.getenv("DATABASE_URL"))
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+# Clave secreta Django
 SECRET_KEY = 'django-insecure-^h!h5#0e-@bxwg8m+qk&7fjgftp@kkzqwza4zjnk*6&^x*ih#9'
 
-# SECURITY WARNING: don't run with debug turned on in production!
+# Seguridad
 DEBUG = True
-
 ALLOWED_HOSTS = []
 
-
-# Application definition
-
+# Aplicaciones instaladas
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'apps.prestamos',
 ]
 
+# Middleware
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -47,11 +48,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-
-
-
 ROOT_URLCONF = 'config.urls'
 
+# Templates
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -69,13 +68,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
-# Database
-
+# Base de datos principal (PostgreSQL)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': tmpPostgres.path.replace('/', ''),
+        'NAME': tmpPostgres.path.decode().replace('/', ''),
         'USER': tmpPostgres.username,
         'PASSWORD': tmpPostgres.password,
         'HOST': tmpPostgres.hostname,
@@ -84,10 +81,7 @@ DATABASES = {
     }
 }
 
-
-# Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
-
+# Validaciones de contraseñas
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -103,30 +97,19 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
+# Configuración internacionalización
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
+# Archivos estáticos
 STATIC_URL = 'static/'
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
+# Tipo de clave por defecto
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# REST Framework
+# Configuración de Django REST Framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
@@ -141,3 +124,31 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
 ]
+
+# ======================================================
+# ⚙️ CONFIGURACIÓN TEMPORAL PARA PRUEBAS (PYTEST)
+# ======================================================
+if any("pytest" in arg for arg in sys.argv):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': ':memory:',  # Base temporal en memoria
+        }
+    }
+
+    # Usar hash de contraseñas rápido para acelerar las pruebas
+    PASSWORD_HASHERS = [
+        'django.contrib.auth.hashers.MD5PasswordHasher',
+    ]
+
+    # Usar backend de correo en memoria (no envía emails reales)
+    EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
+
+    # Desactivar logs durante pruebas
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': True,
+    }
+
+    print("⚙️ Usando base de datos SQLite temporal para pruebas (modo pytest).")
+

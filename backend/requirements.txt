@@ -1,5 +1,5 @@
 asgiref==3.9.2
-Django==5.2.6
+Django==4.2.11
 djangorestframework==3.16.1
 dotenv==0.9.9
 drf-yasg==1.21.11

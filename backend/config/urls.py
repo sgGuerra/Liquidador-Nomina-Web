@@ -16,8 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.http import HttpResponse  # 👈 agregado
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+
+# Vista simple para la página principal
+def home(request):
+    return HttpResponse("<h1>Bienvenido al Liquidador de Nómina</h1>")
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -33,6 +38,7 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
+    path('', home, name='home'),  # 👈 ESTA LÍNEA AGREGA EL HOME
     path('admin/', admin.site.urls),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
@@ -41,3 +47,4 @@ urlpatterns = [
     path('api/', include('apps.prestamos.urls')),
     path('api/', include('apps.nomina.urls')),
 ]
+
