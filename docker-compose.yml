@@ -42,8 +42,7 @@ services:
       retries: 5
 
   backend:
-    build: ./backend
-    image: lcguerra/liquidador-backend
+    image: lcguerra/liquidador-backend:latest
     container_name: liquidador_nomina_backend
     networks:
       - datadog-network
@@ -76,8 +75,7 @@ services:
     command: sh -c "ddtrace-run python manage.py runserver 0.0.0.0:8000"
 
   frontend:
-    build: ./frontend
-    image: lcguerra/liquidador-frontend
+    image: lcguerra/liquidador-frontend:latest
     container_name: liquidador_nomina_frontend
     networks:
       - datadog-network
