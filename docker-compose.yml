@@ -1,9 +1,34 @@
 version: '3.8'
 
+networks:
+  datadog-network:
+    driver: bridge
+
 services:
+  datadog-agent:
+    image: datadog/agent:latest
+    container_name: dd-agent
+    restart: unless-stopped
+    networks:
+      - datadog-network
+    environment:
+      - DD_API_KEY=4bd8e16462045529a97cd22d428fa9f6
+      - DD_SITE=us5.datadoghq.com
+      - DD_APM_ENABLED=true
+      - DD_APM_NON_LOCAL_TRAFFIC=true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc/:/host/proc/:ro
+      - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
+    ports:
+      - "8125:8125/udp"
+      - "8126:8126"
+
   db:
     image: lcguerra/liquidador-db
     container_name: liquidador_nomina_db
+    networks:
+      - datadog-network
     environment:
       - POSTGRES_DB=liquidador_nomina
       - POSTGRES_USER=postgres
@@ -17,20 +42,43 @@ services:
       retries: 5
 
   backend:
-    image: lcguerra/liquidador-backend
+    image: lcguerra/liquidador-backend:latest
     container_name: liquidador_nomina_backend
+    networks:
+      - datadog-network
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/liquidador_nomina
+      - DD_ENV=test
+      - DD_SERVICE=liquidador-backend
+      - DD_VERSION=1.0.0
+      - DD_AGENT_HOST=datadog-agent
+      - DD_TRACE_AGENT_PORT=8126
+      - DD_PROFILING_ENABLED=true
+      - DD_DATA_STREAMS_ENABLED=true
+      - DD_TRACE_REMOVE_INTEGRATION_SERVICE_NAMES_ENABLED=true
+      - DD_LOGS_INJECTION=true
+      - DD_APPSEC_ENABLED=true
+      - DD_IAST_ENABLED=true
+      - DD_APPSEC_SCA_ENABLED=true
+      - DD_TRACE_SAMPLE_RATE=1
+      - DD_TRACE_DEBUG=true
+      - DD_TRACE_ENABLED=true
+    labels:
+      - com.datadoghq.tags.env=test
+      - com.datadoghq.tags.service=liquidador-backend
+      - com.datadoghq.tags.version=1.0.0
     ports:
       - "8000:8000"
     depends_on:
       db:
         condition: service_healthy
-    command: python manage.py runserver 0.0.0.0:8000
+    command: sh -c "ddtrace-run python manage.py runserver 0.0.0.0:8000"
 
   frontend:
-    image: lcguerra/liquidador-frontend
+    image: lcguerra/liquidador-frontend:latest
     container_name: liquidador_nomina_frontend
+    networks:
+      - datadog-network
     ports:
       - "3000:3000"
     depends_on:
